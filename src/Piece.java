@@ -36,12 +36,22 @@ public abstract class Piece {
         final int rowNew = newPosition.getRow();
         final int colNew = newPosition.getCol();
 
+        /**
+         * No move to the out of range
+         */
         if(colNew < 0 || rowNew < 0
-            || Game.BOARD_COL <= colNew || Game.BOARD_ROW <= rowNew)
+            || Game.BOARD_COL <= colNew || Game.BOARD_ROW <= rowNew){
             return false;
+        }
 
-        if(board[rowNew][colNew] != null)
+        /**
+         * No capture same color piece
+         */
+        Piece pcToMove = board[rowNew][colNew];
+        if( pcToMove != null &&
+                (pcToMove.isWhite() == isWhite() ) ) {
             return false;
+        }
 
         return true;
     }
