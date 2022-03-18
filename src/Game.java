@@ -1,6 +1,23 @@
+import java.util.Scanner;
+
 public class Game {
     public static int BOARD_ROW = 8;
     public static int BOARD_COL = 8;
+
+    // Menu options
+    public static int INPUT_INVALID = -1;
+    public static int INPUT_OK = 0;
+    public static int INPUT_AGAIN = 1;
+    public static int INPUT_RESIGN = 2;
+
+    public static int MENU_RESIGN = 0;
+    public static int MENU_HELP = 1;
+    public static int MENU_BOARD = 2;
+    public static int MENU_MOVES = 3;
+    public static int MENU_SQUARES = 4;
+    public static int MENU_UCI = 5;
+    public static int MENU_ERROR = -1;
+
 
     private Piece[][] board;
 
@@ -91,4 +108,142 @@ public class Game {
         this.board[6][6] = new Pawn(false);
         this.board[6][7] = new Pawn(false);
     }
+
+    public void printHelp() {
+        System.out.println("* type 'help' for help");
+        System.out.println("* type 'board' to see the board again");
+        System.out.println("* type 'resign' to resign");
+        System.out.println("* type 'moves' to list all possible moves");
+        System.out.println("* type a square (e.g. b1, e2) to list all possible moves for that square");
+        System.out.println("* type UCI (e.g. b1c3, e7e8) to make a move");
+    }
+
+    public String userInput(String prompt) {
+        System.out.print(prompt);
+        Scanner sc = new Scanner(System.in);
+        String input = sc.nextLine();
+        return input;
+    }
+
+    public int handleInput(String input, boolean isWhite) {
+        switch (input) {
+            case "help":
+                printHelp();
+                return INPUT_AGAIN;
+            case "resign":
+                return INPUT_RESIGN;
+            case "board":
+                showBoard();
+                return INPUT_AGAIN;
+//            case "moves":
+//                return MENU_MOVES;
+        }
+
+        if (input.length() == 2) {
+            // SQUARE
+            int col = Integer.valueOf(input.charAt(0)) - 97; // 97 is ASCII for a
+            int row = Integer.valueOf(input.charAt(1)) - 1 - 48; // 48 is ASCII for 0
+            if (row < 0 || col < 0 || row >= BOARD_ROW || col >= BOARD_COL) {
+                return INPUT_INVALID;
+            }
+            if (this.board[row][col] != null && this.board[row][col].isWhite() == isWhite) {
+                possibleMoves(row, col);
+                return INPUT_AGAIN;
+            } else {
+                return INPUT_INVALID;
+            }
+        } else if (input.length() == 4) {
+            // UCI
+            int col = Integer.valueOf(input.charAt(0)) - 97; // 97 is ASCII for a
+            int row = (int) input.charAt(1) - 1 - 48; // 48 is ASCII for 0
+            int newCol = Integer.valueOf(input.charAt(2)) - 97; // 97 is ASCII for a
+            int newRow = Integer.valueOf(input.charAt(3)) - 1 - 48; // 48 is ASCII for 0
+            if (row < 0 || col < 0 || row >= BOARD_ROW || col >= BOARD_COL ||
+                newRow < 0 || newCol < 0 || newRow >= BOARD_ROW || newCol >= BOARD_COL) {
+                return INPUT_INVALID;
+            }
+            if (this.board[row][col].isWhite() == isWhite) {
+                Position newPos = new Position(newRow,newCol);
+                Position oldPos = new Position(row,col);
+                if (this.movePiece(oldPos,newPos)) {
+                    return INPUT_OK;
+                } else {
+                    return INPUT_INVALID;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    public void startGame() {
+        showBoard();
+        boolean finishGame = false;
+        String input;
+        int opt;
+        while (!finishGame) {
+            // White
+            System.out.println("White to move");
+            input = userInput("Enter UCI (type 'help' for help): ");
+            opt = handleInput(input, true);
+            while (opt != INPUT_OK && opt != INPUT_RESIGN) {
+                if (opt == INPUT_INVALID) {
+                    System.out.println("Invalid input, please try again\n");
+                }
+                System.out.println("White to move");
+                input = userInput("Enter UCI (type 'help' for help): ");
+                opt = handleInput(input, true);
+            }
+            showBoard();
+            if (opt == INPUT_RESIGN) {
+                System.out.println("Game over - 0-1 - Black won by resignation");
+                return;
+            }
+
+            // Black
+            System.out.println("Black to move");
+            input = userInput("Enter UCI (type 'help' for help): ");
+            opt = handleInput(input, false);
+            while (opt != INPUT_OK && opt != INPUT_RESIGN) {
+                if (opt == INPUT_INVALID) {
+                    System.out.println("Invalid input, please try again\n");
+                }
+                System.out.println("Black to move");
+                input = userInput("Enter UCI (type 'help' for help): ");
+                opt = handleInput(input, false);
+            }
+            showBoard();
+            if (opt == INPUT_RESIGN) {
+                System.out.println("Game over - 1-0 - White won by resignation");
+                return;
+            }
+
+        }
+
+    }
+
+    public String positionToChar(int row, int col) {
+        char colChar = (char)(col + 97);
+        char rowChar = (char)(row + 48 + 1);
+        return String.valueOf(colChar) + String.valueOf(rowChar);
+    }
+
+    public void possibleMoves(int row, int col) {
+        String pos = positionToChar(row,col);
+        Piece piece = this.board[row][col];
+        Position newPos;
+        System.out.println("Possible moves for " + pos + ":");
+        System.out.print("{");
+        for (int i = 0 ; i < BOARD_ROW ; i++) {
+            for (int j = 0 ; j<BOARD_COL; j++ ) {
+                newPos = new Position(i,j);
+                if (piece.isValidMove(newPos,this.board)) {
+                    System.out.print(positionToChar(i,j) + " " );
+                }
+            }
+        }
+        System.out.println("}");
+
+    }
+
 }
