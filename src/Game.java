@@ -10,14 +10,6 @@ public class Game {
     public static int INPUT_AGAIN = 1;
     public static int INPUT_RESIGN = 2;
 
-    public static int MENU_RESIGN = 0;
-    public static int MENU_HELP = 1;
-    public static int MENU_BOARD = 2;
-    public static int MENU_MOVES = 3;
-    public static int MENU_SQUARES = 4;
-    public static int MENU_UCI = 5;
-    public static int MENU_ERROR = -1;
-
 
     private Piece[][] board;
 
@@ -135,8 +127,7 @@ public class Game {
             case "board":
                 showBoard();
                 return INPUT_AGAIN;
-//            case "moves":
-//                return MENU_MOVES;
+
         }
 
         if (input.length() == 2) {
