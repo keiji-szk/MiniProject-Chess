@@ -1,4 +1,5 @@
 public class Bishop extends Piece {
+
     static final int IMPORTANCE = 3;
 
     public Bishop() {
@@ -13,7 +14,22 @@ public class Bishop extends Piece {
     public String toString() {
         return "Bishop{value='" + getValue() + "'}";
     }
+
     /*
     TODO: override isValidMove().
      */
+
+    // Field 主教
+    @Override
+    public void move(Position newPosition) {
+        System.out.println("Moved Diagonally Only");
+    }
+
+    @Override
+    public boolean isValidMove(Position newPosition, Piece[][] board) {
+        if (!super.isValidMove(newPosition, board))
+            return false;
+        return (Math.abs(this.curPos.getRow() - newPosition.getRow())
+                == Math.abs(this.curPos.getCol() - newPosition.getCol()));
+    }
 }
