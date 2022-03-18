@@ -3,7 +3,7 @@ public class Pawn extends Piece {
     private boolean promoted;
     private Piece newPiece;
 
-    public Pawn(int i, int i1, int i2) {
+    public Pawn() {
         this(true);
     }
 
@@ -49,21 +49,4 @@ public class Pawn extends Piece {
     /*
     TODO: override isValidMove().
      */
-
-    @Override
-    public boolean isValidMove(Position newPosition, Piece[][] board) {
-        return super.isValidMove(newPosition, board);
-    }
-
-    // Field 兵
-    @Override
-    public void move(Position newPosition) {
-        System.out.println("Moved Forward 1");
-    }
-
-    /**
-     * Valid Move
-     * I'm not sure is this correct? and the special rule,
-     */
-
 }
