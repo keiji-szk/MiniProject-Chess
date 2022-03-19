@@ -1,12 +1,8 @@
 public class Queen extends Piece {
     static final int IMPORTANCE = 9;
 
-    public Queen() {
-        this(true);
-    }
-
-    public Queen(boolean isWhite) {
-        super(isWhite, IMPORTANCE);
+    public Queen(boolean isWhite, Position pos) {
+        super(isWhite, IMPORTANCE, pos);
     }
 
     @Override
