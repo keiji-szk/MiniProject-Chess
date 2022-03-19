@@ -127,6 +127,9 @@ public class Game {
             case "board":
                 showBoard();
                 return INPUT_AGAIN;
+            case "moves":
+                printAllMoves(isWhite);
+                return INPUT_AGAIN;
 
         }
 
@@ -225,16 +228,33 @@ public class Game {
         Position newPos;
         System.out.println("Possible moves for " + pos + ":");
         System.out.print("{");
+        int count = 0;
         for (int i = 0 ; i < BOARD_ROW ; i++) {
             for (int j = 0 ; j<BOARD_COL; j++ ) {
                 newPos = new Position(i,j);
                 if (piece.isValidMove(newPos,this.board)) {
-                    System.out.print(positionToChar(i,j) + " " );
+                    if (count > 0) {
+                        System.out.print(", ");
+                    }
+                    count++;
+                    System.out.print(positionToChar(i,j));
+
                 }
             }
         }
         System.out.println("}");
 
+    }
+
+    public void printAllMoves(boolean isWhite) {
+        System.out.println("All possible moves to " + (isWhite ? "WHITE" : "BLACK") + ":");
+        for (int i = 0 ; i < BOARD_ROW ; i++) {
+            for (int j = 0 ; j < BOARD_COL ; j++) {
+                if (this.board[i][j] != null && this.board[i][j].isWhite() == isWhite) {
+                    possibleMoves(i, j);
+                }
+            }
+        }
     }
 
 }
