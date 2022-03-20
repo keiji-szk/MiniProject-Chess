@@ -105,6 +105,10 @@ public class Pawn extends Piece {
         if(!super.isValidMove(newPosition, board))
             return false;
 
+        // If this pawn is promoted, the movement follows the replacement piece.
+        if(isPromoted())
+            return newPiece.isValidMove(newPosition, board);
+
         final int forwardDir = isWhite() ? -1 : 1;
         final int newRow = newPosition.getRow();
         final int newCol = newPosition.getCol();
