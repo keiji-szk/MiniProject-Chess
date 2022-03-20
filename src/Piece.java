@@ -6,14 +6,25 @@ public abstract class Piece {
     private boolean isWhite;
     protected Position curPos;
 
-    public Piece(boolean isWhite, int value) {
+    public Piece(boolean isWhite, int value, Position pos) {
         this.isWhite = isWhite;
         this.value = value;
-        this.curPos = new Position(0, 0);
+        this.curPos = pos;
     }
 
     @Override
     abstract public String toString();
+
+    public boolean move(Position newPosition, Piece[][] board ){
+        if(!isValidMove(newPosition, board)){
+            return false;
+        }
+
+        board[newPosition.getRow()][newPosition.getCol()] = this;
+        board[curPos.getRow()][curPos.getCol()] = null;
+        curPos = newPosition;
+        return true;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -26,10 +37,6 @@ public abstract class Piece {
     @Override
     public int hashCode() {
         return Objects.hash(value, isWhite);
-    }
-
-    public void move(Position pos){
-        curPos = pos;
     }
 
     public boolean isValidMove(Position newPosition, Piece[][] board ){

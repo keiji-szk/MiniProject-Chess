@@ -5,16 +5,5 @@ public class Driver {
         Game game = new Game();
 
         game.startGame();
-//        game.showBoard();
-
-
-//        if(game.movePiece(new Position(1, 0), new Position(2, 0))){
-//            System.out.println("Move!");
-//            game.showBoard();
-//        }
     }
-
-
-
-
 }

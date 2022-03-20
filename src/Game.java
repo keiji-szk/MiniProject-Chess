@@ -9,7 +9,7 @@ public class Game {
     public static int INPUT_OK = 0;
     public static int INPUT_AGAIN = 1;
     public static int INPUT_RESIGN = 2;
-
+    public static int INPUT_CHECKMATE = 3;
 
     private Piece[][] board;
 
@@ -19,33 +19,30 @@ public class Game {
     }
 
     public boolean movePiece(Position posFrom, Position posTo){
-        Piece pc = board[posFrom.row][posFrom.col];
+        Piece pc = board[posFrom.getRow()][posFrom.getCol()];
         if(pc == null){
             return false;
         }
 
-        if(!pc.isValidMove(posTo, board)){
-            return false;
-        }
-
-        board[posTo.row][posTo.col] = pc;
-        board[posFrom.row][posFrom.col] = null;
-        pc.move(posTo);
-        return true;
+        return pc.move(posTo, board);
     }
 
     public void showBoard(){
-        for(int r = BOARD_ROW - 1; 0 <= r; --r){
+        for(int r = 0; r < BOARD_ROW; ++r){
             for(int c = 0; c < BOARD_COL; ++c){
                 printPiece(board[r][c]);
                 System.out.print(" ");
             }
-            System.out.println("  " + (r + 1));
+            System.out.println("  " + (8 - r));
         }
-        System.out.println("\na b c d e f g h\n");
+        System.out.println("\na b c d e f g h");
     }
 
     private void printPiece(Piece pc){
+        if(pc instanceof Pawn){
+            pc = ((Pawn) pc).isPromoted() ? ((Pawn) pc).getNewPiece() : pc;
+        }
+
         if(pc instanceof King ){
             System.out.print( pc.isWhite() ? "♔" : "♚" );
         }else if(pc instanceof Queen){
@@ -64,41 +61,41 @@ public class Game {
     }
 
     private void Initialise(){
-        /* Create White pieces*/
-        this.board[0][0] = new Rook(true);
-        this.board[0][1] = new Knight(true);
-        this.board[0][2] = new Bishop(true);
-        this.board[0][3] = new Queen(true);
-        this.board[0][4] = new King(true);
-        this.board[0][5] = new Bishop(true);
-        this.board[0][6] = new Knight(true);
-        this.board[0][7] = new Rook(true);
-        this.board[1][0] = new Pawn(true);
-        this.board[1][1] = new Pawn(true);
-        this.board[1][2] = new Pawn(true);
-        this.board[1][3] = new Pawn(true);
-        this.board[1][4] = new Pawn(true);
-        this.board[1][5] = new Pawn(true);
-        this.board[1][6] = new Pawn(true);
-        this.board[1][7] = new Pawn(true);
-
         /* Create Black pieces*/
-        this.board[7][0] = new Rook(false);
-        this.board[7][1] = new Knight(false);
-        this.board[7][2] = new Bishop(false);
-        this.board[7][3] = new Queen(false);
-        this.board[7][4] = new King(false);
-        this.board[7][5] = new Bishop(false);
-        this.board[7][6] = new Knight(false);
-        this.board[7][7] = new Rook(false);
-        this.board[6][0] = new Pawn(false);
-        this.board[6][1] = new Pawn(false);
-        this.board[6][2] = new Pawn(false);
-        this.board[6][3] = new Pawn(false);
-        this.board[6][4] = new Pawn(false);
-        this.board[6][5] = new Pawn(false);
-        this.board[6][6] = new Pawn(false);
-        this.board[6][7] = new Pawn(false);
+        this.board[0][0] = new Rook     (false, new Position(0, 0));
+        this.board[0][1] = new Knight   (false, new Position(0, 1));
+        this.board[0][2] = new Bishop   (false, new Position(0, 2));
+        this.board[0][3] = new Queen    (false, new Position(0, 3));
+        this.board[0][4] = new King     (false, new Position(0, 4));
+        this.board[0][5] = new Bishop   (false, new Position(0, 5));
+        this.board[0][6] = new Knight   (false, new Position(0, 6));
+        this.board[0][7] = new Rook     (false, new Position(0, 7));
+        this.board[1][0] = new Pawn     (false, new Position(1, 0));
+        this.board[1][1] = new Pawn     (false, new Position(1, 1));
+        this.board[1][2] = new Pawn     (false, new Position(1, 2));
+        this.board[1][3] = new Pawn     (false, new Position(1, 3));
+        this.board[1][4] = new Pawn     (false, new Position(1, 4));
+        this.board[1][5] = new Pawn     (false, new Position(1, 5));
+        this.board[1][6] = new Pawn     (false, new Position(1, 6));
+        this.board[1][7] = new Pawn     (false, new Position(1, 7));
+
+        /* Create White pieces*/
+        this.board[7][0] = new Rook     (true, new Position(7, 0));
+        this.board[7][1] = new Knight   (true, new Position(7, 1));
+        this.board[7][2] = new Bishop   (true, new Position(7, 2));
+        this.board[7][3] = new Queen    (true, new Position(7, 3));
+        this.board[7][4] = new King     (true, new Position(7, 4));
+        this.board[7][5] = new Bishop   (true, new Position(7, 5));
+        this.board[7][6] = new Knight   (true, new Position(7, 6));
+        this.board[7][7] = new Rook     (true, new Position(7, 7));
+        this.board[6][0] = new Pawn     (true, new Position(6, 0));
+        this.board[6][1] = new Pawn     (true, new Position(6, 1));
+        this.board[6][2] = new Pawn     (true, new Position(6, 2));
+        this.board[6][3] = new Pawn     (true, new Position(6, 3));
+        this.board[6][4] = new Pawn     (true, new Position(6, 4));
+        this.board[6][5] = new Pawn     (true, new Position(6, 5));
+        this.board[6][6] = new Pawn     (true, new Position(6, 6));
+        this.board[6][7] = new Pawn     (true, new Position(6, 7));
     }
 
     public void printHelp() {
@@ -108,6 +105,7 @@ public class Game {
         System.out.println("* type 'moves' to list all possible moves");
         System.out.println("* type a square (e.g. b1, e2) to list all possible moves for that square");
         System.out.println("* type UCI (e.g. b1c3, e7e8) to make a move");
+        System.out.println("* type 'debug' to debug movement of each piece");
     }
 
     public String userInput(String prompt) {
@@ -130,18 +128,22 @@ public class Game {
             case "moves":
                 printAllMoves(isWhite);
                 return INPUT_AGAIN;
-
+            case "debug":
+                debugMoves();
+                return INPUT_AGAIN;
         }
 
         if (input.length() == 2) {
             // SQUARE
             int col = Integer.valueOf(input.charAt(0)) - 97; // 97 is ASCII for a
-            int row = Integer.valueOf(input.charAt(1)) - 1 - 48; // 48 is ASCII for 0
+            int row = 7 - (Integer.valueOf(input.charAt(1)) - 1 - 48); // 48 is ASCII for 0
             if (row < 0 || col < 0 || row >= BOARD_ROW || col >= BOARD_COL) {
                 return INPUT_INVALID;
             }
-            if (this.board[row][col] != null && this.board[row][col].isWhite() == isWhite) {
+
+            if (this.board[row][col] != null /*&& this.board[row][col].isWhite() == isWhite*/) {
                 possibleMoves(row, col);
+                showPossibleMoves(row, col);
                 return INPUT_AGAIN;
             } else {
                 return INPUT_INVALID;
@@ -149,17 +151,24 @@ public class Game {
         } else if (input.length() == 4) {
             // UCI
             int col = Integer.valueOf(input.charAt(0)) - 97; // 97 is ASCII for a
-            int row = (int) input.charAt(1) - 1 - 48; // 48 is ASCII for 0
+            int row = 7 - ( input.charAt(1) - 1 - 48 ); // 48 is ASCII for 0
             int newCol = Integer.valueOf(input.charAt(2)) - 97; // 97 is ASCII for a
-            int newRow = Integer.valueOf(input.charAt(3)) - 1 - 48; // 48 is ASCII for 0
+            int newRow = 7 - (Integer.valueOf(input.charAt(3)) - 1 - 48); // 48 is ASCII for 0
             if (row < 0 || col < 0 || row >= BOARD_ROW || col >= BOARD_COL ||
                 newRow < 0 || newCol < 0 || newRow >= BOARD_ROW || newCol >= BOARD_COL) {
                 return INPUT_INVALID;
             }
-            if (this.board[row][col].isWhite() == isWhite) {
+
+            Piece pc = this.board[row][col];
+            if (pc != null && pc.isWhite() == isWhite) {
                 Position newPos = new Position(newRow,newCol);
                 Position oldPos = new Position(row,col);
+                Piece pcNewPos = board[newRow][newCol];
                 if (this.movePiece(oldPos,newPos)) {
+                    if(pcNewPos instanceof King ){
+                        return INPUT_CHECKMATE;
+                    }
+
                     return INPUT_OK;
                 } else {
                     return INPUT_INVALID;
@@ -167,7 +176,7 @@ public class Game {
             }
         }
 
-        return 0;
+        return INPUT_INVALID;
     }
 
     public void startGame() {
@@ -177,32 +186,42 @@ public class Game {
         int opt;
         while (!finishGame) {
             // White
-            System.out.println("White to move");
+            System.out.println("White to move. ♔ is white. ♚ is black.");
             input = userInput("Enter UCI (type 'help' for help): ");
             opt = handleInput(input, true);
+            if(opt == INPUT_CHECKMATE){
+                showBoard();
+                System.out.println("Checkmate!!! White won!");
+                return;
+            }
             while (opt != INPUT_OK && opt != INPUT_RESIGN) {
                 if (opt == INPUT_INVALID) {
                     System.out.println("Invalid input, please try again\n");
                 }
-                System.out.println("White to move");
+                System.out.println("White to move. ♔ is white. ♚ is black.");
                 input = userInput("Enter UCI (type 'help' for help): ");
                 opt = handleInput(input, true);
             }
             showBoard();
             if (opt == INPUT_RESIGN) {
+                showBoard();
                 System.out.println("Game over - 0-1 - Black won by resignation");
                 return;
             }
 
             // Black
-            System.out.println("Black to move");
+            System.out.println("Black to move. ♔ is white. ♚ is black.");
             input = userInput("Enter UCI (type 'help' for help): ");
             opt = handleInput(input, false);
+            if(opt == INPUT_CHECKMATE){
+                System.out.println("Checkmate!!! Black won!");
+                return;
+            }
             while (opt != INPUT_OK && opt != INPUT_RESIGN) {
                 if (opt == INPUT_INVALID) {
                     System.out.println("Invalid input, please try again\n");
                 }
-                System.out.println("Black to move");
+                System.out.println("Black to move. ♔ is white. ♚ is black.");
                 input = userInput("Enter UCI (type 'help' for help): ");
                 opt = handleInput(input, false);
             }
@@ -218,8 +237,7 @@ public class Game {
 
     public String positionToChar(int row, int col) {
         char colChar = (char)(col + 97);
-        char rowChar = (char)(row + 48 + 1);
-        return String.valueOf(colChar) + String.valueOf(rowChar);
+        return String.valueOf(colChar) + (8-row);
     }
 
     public void possibleMoves(int row, int col) {
@@ -257,4 +275,48 @@ public class Game {
         }
     }
 
+    private void debugMoves(){
+        board = new Piece[BOARD_ROW][BOARD_COL];
+
+        /* Create Black pieces*/
+        this.board[0][1] = new Knight   (false, new Position(0, 1));
+        this.board[0][4] = new King     (false, new Position(0, 4));
+        this.board[0][7] = new Rook     (false, new Position(0, 7));
+        this.board[3][6] = new Queen    (false, new Position(3, 6));
+        this.board[1][7] = new Pawn     (false, new Position(1, 7));
+        this.board[1][3] = new Pawn     (false, new Position(1, 3));
+
+        /* Create White pieces*/
+        this.board[3][0] = new Rook     (true, new Position(3, 0));
+        this.board[5][2] = new Knight   (true, new Position(5, 2));
+        this.board[7][2] = new Bishop   (true, new Position(7, 2));
+        this.board[5][3] = new Queen    (true, new Position(5, 3));
+        this.board[6][4] = new King     (true, new Position(6, 4));
+        this.board[7][5] = new Bishop   (true, new Position(7, 5));
+        this.board[7][6] = new Knight   (true, new Position(7, 6));
+        this.board[7][7] = new Rook     (true, new Position(7, 7));
+        this.board[1][2] = new Pawn     (true, new Position(1, 2));
+        this.board[4][6] = new Pawn     (true, new Position(4, 6));
+
+        showBoard();
+    }
+
+    private void showPossibleMoves(int row, int col){
+        Piece pc = board[row][col];
+        if(pc == null)
+            return;
+
+        for(int r = 0; r < BOARD_ROW; ++r){
+            for(int c = 0; c < BOARD_COL; ++c){
+                if(pc.isValidMove(new Position(r, c), board)){
+                    System.out.print("○");
+                }else{
+                    printPiece(board[r][c]);
+                }
+                System.out.print(" ");
+            }
+            System.out.println("  " + (8 - r));
+        }
+        System.out.println("\na b c d e f g h");
+    }
 }
